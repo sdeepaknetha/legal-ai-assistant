@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Section</title>
+</head>
+<body>
+
+<h2>Edit Section</h2>
+
+<form method="post">
+    <input type="text" name="section" value="{{ section.section }}" required><br>
+    <input type="text" name="crime" value="{{ section.crime }}" required><br>
+    <input type="text" name="punishment" value="{{ section.punishment }}" required><br>
+    <button type="submit">Update</button>
+</form>
+
+<br>
+<a href="/all">Back</a>
+
+</body>
+</html>
