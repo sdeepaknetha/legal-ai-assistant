@@ -207,4 +207,31 @@ def delete_section(request: Request, section_id: int):
         db.commit()
 
     db.close()
+
     return RedirectResponse(url="/all", status_code=303)
+
+@app.post("/search_section", response_class=HTMLResponse)
+def search_section(request: Request, section: str = Form(...)):
+    db = SessionLocal()
+    result = db.query(models.LegalSection).filter(
+        models.LegalSection.section == section
+    ).all()
+    db.close()
+
+    return templates.TemplateResponse(
+        "all.html",
+        {"request": request, "sections": result}
+    )
+
+@app.post("/search_crime", response_class=HTMLResponse)
+def search_crime(request: Request, crime: str = Form(...)):
+    db = SessionLocal()
+    result = db.query(models.LegalSection).filter(
+        models.LegalSection.crime.ilike(f"%{crime}%")
+    ).all()
+    db.close()
+
+    return templates.TemplateResponse(
+        "all.html",
+        {"request": request, "sections": result}
+    )
