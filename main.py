@@ -35,7 +35,6 @@ def seed_data():
                     db.add(new_section)
 
                 db.commit()
-                print("IPC data loaded successfully!")
 
         except Exception as e:
             print("Error loading IPC data:", e)
@@ -84,7 +83,7 @@ def logout(request: Request):
 
 
 # ----------------------------
-# Show All
+# Show All with Pagination
 # ----------------------------
 @app.get("/all", response_class=HTMLResponse)
 def show_all(request: Request, page: int = 1):
@@ -126,7 +125,7 @@ def search_section(request: Request, section: str = Form(...)):
 
     return templates.TemplateResponse(
         "all.html",
-        {"request": request, "sections": result}
+        {"request": request, "sections": result, "page": 1, "total_pages": 1}
     )
 
 
@@ -140,6 +139,5 @@ def search_crime(request: Request, crime: str = Form(...)):
 
     return templates.TemplateResponse(
         "all.html",
-        {"request": request, "sections": result}
+        {"request": request, "sections": result, "page": 1, "total_pages": 1}
     )
-
