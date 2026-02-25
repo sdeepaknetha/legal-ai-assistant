@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, Depends, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
-from sqlalchemy.orm import Session
 from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 import models
 
@@ -45,6 +45,52 @@ def add_section(
     db.add(new_section)
     db.commit()
     return RedirectResponse(url="/all", status_code=303)
+
+
+# 🔎 SEARCH BY SECTION
+@app.post("/search_section", response_class=HTMLResponse)
+def search_section(
+    request: Request,
+    section: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    result = db.query(models.LegalSection)\
+        .filter(models.LegalSection.section == section)\
+        .first()
+
+    if result:
+        return templates.TemplateResponse("home.html", {
+            "request": request,
+            "result": result
+        })
+    else:
+        return templates.TemplateResponse("home.html", {
+            "request": request,
+            "error": "Section not found"
+        })
+
+
+# 🔎 SEARCH BY CRIME
+@app.post("/search_crime", response_class=HTMLResponse)
+def search_crime(
+    request: Request,
+    crime: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    result = db.query(models.LegalSection)\
+        .filter(models.LegalSection.crime.ilike(f"%{crime}%"))\
+        .first()
+
+    if result:
+        return templates.TemplateResponse("home.html", {
+            "request": request,
+            "result": result
+        })
+    else:
+        return templates.TemplateResponse("home.html", {
+            "request": request,
+            "error": "Crime not found"
+        })
 
 
 @app.get("/all", response_class=HTMLResponse)
