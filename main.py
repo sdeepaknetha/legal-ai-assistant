@@ -2,23 +2,13 @@ from fastapi import FastAPI, Request, Depends, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from starlette.middleware.sessions import SessionMiddleware
 from database import SessionLocal, engine
 import models
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-
-# 🔐 Session Middleware
-app.add_middleware(SessionMiddleware, secret_key="supersecretkey")
-
 templates = Jinja2Templates(directory="templates")
-
-
-# 🔑 ADMIN CREDENTIALS
-ADMIN_USERNAME = "admin"
-ADMIN_PASSWORD = "admin123"
 
 
 def get_db():
@@ -29,17 +19,29 @@ def get_db():
         db.close()
 
 
-# 🔥 Seed Data
+# 🔥 AUTO INSERT DEFAULT IPC SECTIONS
 def seed_data():
     db = SessionLocal()
     if db.query(models.LegalSection).count() == 0:
+
         default_sections = [
+            {"section": "120B", "crime": "Criminal Conspiracy", "punishment": "Same as abetted offence"},
             {"section": "302", "crime": "Murder", "punishment": "Life imprisonment or death"},
+            {"section": "307", "crime": "Attempt to Murder", "punishment": "10 years imprisonment"},
+            {"section": "323", "crime": "Voluntarily Causing Hurt", "punishment": "1 year imprisonment"},
+            {"section": "354", "crime": "Outraging Modesty of Woman", "punishment": "5 years imprisonment"},
+            {"section": "376", "crime": "Rape", "punishment": "Not less than 10 years imprisonment"},
+            {"section": "378", "crime": "Theft", "punishment": "3 years imprisonment"},
+            {"section": "406", "crime": "Criminal Breach of Trust", "punishment": "3 years imprisonment"},
             {"section": "420", "crime": "Cheating", "punishment": "7 years imprisonment"},
+            {"section": "499", "crime": "Defamation", "punishment": "2 years imprisonment"},
         ]
+
         for item in default_sections:
             db.add(models.LegalSection(**item))
+
         db.commit()
+
     db.close()
 
 
@@ -51,51 +53,18 @@ def home(request: Request):
     return templates.TemplateResponse("home.html", {"request": request})
 
 
-# 🔐 LOGIN PAGE
-@app.get("/login", response_class=HTMLResponse)
-def login_page(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
-
-
-@app.post("/login")
-def login(request: Request, username: str = Form(...), password: str = Form(...)):
-
-    if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
-        request.session["admin"] = True
-        return RedirectResponse(url="/add", status_code=303)
-
-    return templates.TemplateResponse("login.html", {
-        "request": request,
-        "error": "Invalid credentials"
-    })
-
-
-@app.get("/logout")
-def logout(request: Request):
-    request.session.clear()
-    return RedirectResponse(url="/", status_code=303)
-
-
-# 🔐 PROTECTED ADD PAGE
 @app.get("/add", response_class=HTMLResponse)
 def add_page(request: Request):
-    if not request.session.get("admin"):
-        return RedirectResponse(url="/login", status_code=303)
-
     return templates.TemplateResponse("add.html", {"request": request})
 
 
 @app.post("/add")
 def add_section(
-    request: Request,
     section: str = Form(...),
     crime: str = Form(...),
     punishment: str = Form(...),
     db: Session = Depends(get_db)
 ):
-    if not request.session.get("admin"):
-        return RedirectResponse(url="/login", status_code=303)
-
     new_section = models.LegalSection(
         section=section,
         crime=crime,
@@ -104,6 +73,49 @@ def add_section(
     db.add(new_section)
     db.commit()
     return RedirectResponse(url="/all", status_code=303)
+
+
+@app.post("/search_section", response_class=HTMLResponse)
+def search_section(request: Request, section: str = Form(...), db: Session = Depends(get_db)):
+    result = db.query(models.LegalSection)\
+        .filter(models.LegalSection.section == section)\
+        .first()
+
+    if result:
+        return templates.TemplateResponse("home.html", {"request": request, "result": result})
+    else:
+        return templates.TemplateResponse("home.html", {"request": request, "error": "Section not found"})
+
+
+@app.post("/search_crime", response_class=HTMLResponse)
+def search_crime(request: Request, crime: str = Form(...), db: Session = Depends(get_db)):
+    result = db.query(models.LegalSection)\
+        .filter(models.LegalSection.crime.ilike(f"%{crime}%"))\
+        .first()
+
+    if result:
+        return templates.TemplateResponse("home.html", {"request": request, "result": result})
+    else:
+        return templates.TemplateResponse("home.html", {"request": request, "error": "Crime not found"})
+
+
+@app.get("/section/{section_id}", response_class=HTMLResponse)
+def section_detail(section_id: str, request: Request, db: Session = Depends(get_db)):
+    section = db.query(models.LegalSection)\
+        .filter(models.LegalSection.section == section_id)\
+        .first()
+
+    explanation = f"""
+    Section {section.section} deals with {section.crime}.
+    This offence is punishable with {section.punishment}.
+    It is considered a serious legal offence under Indian Penal Code.
+    """
+
+    return templates.TemplateResponse("detail.html", {
+        "request": request,
+        "section": section,
+        "explanation": explanation
+    })
 
 
 @app.get("/all", response_class=HTMLResponse)
