@@ -15,7 +15,12 @@
     <tbody>
         {% for section in sections %}
         <tr>
-            <td>{{ section.section }}</td>
+            <td>
+    <a href="/section/{{ section.section }}" 
+       class="btn btn-outline-primary btn-sm">
+       {{ section.section }}
+    </a>
+</td>
             <td>{{ section.crime }}</td>
             <td>{{ section.punishment }}</td>
         </tr>
@@ -48,3 +53,4 @@
 </nav>
 
 {% endblock %}
+
