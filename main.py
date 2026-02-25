@@ -1,16 +1,16 @@
 from fastapi import FastAPI, Request, Depends, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
+from fastapi.templating import Jinja2Templates
 from database import SessionLocal, engine
 import models
-from fastapi.templating import Jinja2Templates
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
 templates = Jinja2Templates(directory="templates")
+
 
 def get_db():
     db = SessionLocal()
@@ -20,13 +20,11 @@ def get_db():
         db.close()
 
 
-# ---------------- HOME ----------------
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
     return templates.TemplateResponse("home.html", {"request": request})
 
 
-# ---------------- ADD SECTION ----------------
 @app.get("/add", response_class=HTMLResponse)
 def add_page(request: Request):
     return templates.TemplateResponse("add.html", {"request": request})
@@ -49,7 +47,6 @@ def add_section(
     return RedirectResponse(url="/all", status_code=303)
 
 
-# ---------------- VIEW ALL (WITH PAGINATION) ----------------
 @app.get("/all", response_class=HTMLResponse)
 def view_all(request: Request, page: int = 1, db: Session = Depends(get_db)):
     per_page = 10
