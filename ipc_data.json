@@ -1,0 +1,22 @@
+[
+  {"section": "302", "crime": "Murder", "punishment": "Death or life imprisonment"},
+  {"section": "304", "crime": "Culpable Homicide", "punishment": "Life imprisonment or up to 10 years"},
+  {"section": "307", "crime": "Attempt to Murder", "punishment": "Imprisonment up to 10 years"},
+  {"section": "323", "crime": "Voluntarily causing hurt", "punishment": "Imprisonment up to 1 year"},
+  {"section": "324", "crime": "Hurt with dangerous weapons", "punishment": "Imprisonment up to 3 years"},
+  {"section": "326", "crime": "Grievous hurt", "punishment": "Life imprisonment or up to 10 years"},
+  {"section": "354", "crime": "Outraging modesty of woman", "punishment": "Imprisonment up to 5 years"},
+  {"section": "363", "crime": "Kidnapping", "punishment": "Imprisonment up to 7 years"},
+  {"section": "364A", "crime": "Kidnapping for ransom", "punishment": "Death or life imprisonment"},
+  {"section": "376", "crime": "Rape", "punishment": "Not less than 10 years"},
+  {"section": "379", "crime": "Theft", "punishment": "Imprisonment up to 3 years"},
+  {"section": "390", "crime": "Robbery", "punishment": "Imprisonment up to 10 years"},
+  {"section": "395", "crime": "Dacoity", "punishment": "Life imprisonment or 10 years"},
+  {"section": "406", "crime": "Criminal breach of trust", "punishment": "Up to 3 years"},
+  {"section": "409", "crime": "Breach of trust by public servant", "punishment": "Life imprisonment"},
+  {"section": "420", "crime": "Cheating", "punishment": "Up to 7 years and fine"},
+  {"section": "468", "crime": "Forgery", "punishment": "Up to 7 years"},
+  {"section": "471", "crime": "Using forged document", "punishment": "Same as forgery"},
+  {"section": "499", "crime": "Defamation", "punishment": "Up to 2 years"},
+  {"section": "500", "crime": "Punishment for defamation", "punishment": "Up to 2 years"}
+]
