@@ -19,22 +19,33 @@ def get_db():
         db.close()
 
 
-# 🔥 AUTO INSERT DEFAULT IPC SECTIONS
+# 🔥 AUTO INSERT 20 IPC SECTIONS
 def seed_data():
     db = SessionLocal()
     if db.query(models.LegalSection).count() == 0:
 
         default_sections = [
+
             {"section": "120B", "crime": "Criminal Conspiracy", "punishment": "Same as abetted offence"},
+            {"section": "141", "crime": "Unlawful Assembly", "punishment": "6 months imprisonment"},
+            {"section": "186", "crime": "Obstructing Public Servant", "punishment": "3 months imprisonment"},
+            {"section": "191", "crime": "Giving False Evidence", "punishment": "7 years imprisonment"},
+            {"section": "295A", "crime": "Hurting Religious Sentiments", "punishment": "3 years imprisonment"},
             {"section": "302", "crime": "Murder", "punishment": "Life imprisonment or death"},
+            {"section": "304A", "crime": "Causing Death by Negligence", "punishment": "2 years imprisonment"},
             {"section": "307", "crime": "Attempt to Murder", "punishment": "10 years imprisonment"},
             {"section": "323", "crime": "Voluntarily Causing Hurt", "punishment": "1 year imprisonment"},
             {"section": "354", "crime": "Outraging Modesty of Woman", "punishment": "5 years imprisonment"},
+            {"section": "363", "crime": "Kidnapping", "punishment": "7 years imprisonment"},
             {"section": "376", "crime": "Rape", "punishment": "Not less than 10 years imprisonment"},
             {"section": "378", "crime": "Theft", "punishment": "3 years imprisonment"},
+            {"section": "403", "crime": "Dishonest Misappropriation", "punishment": "2 years imprisonment"},
             {"section": "406", "crime": "Criminal Breach of Trust", "punishment": "3 years imprisonment"},
             {"section": "420", "crime": "Cheating", "punishment": "7 years imprisonment"},
+            {"section": "441", "crime": "Criminal Trespass", "punishment": "3 months imprisonment"},
+            {"section": "463", "crime": "Forgery", "punishment": "2 years imprisonment"},
             {"section": "499", "crime": "Defamation", "punishment": "2 years imprisonment"},
+            {"section": "506", "crime": "Criminal Intimidation", "punishment": "2 years imprisonment"},
         ]
 
         for item in default_sections:
