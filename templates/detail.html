@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card p-4 shadow mt-4">
+
+    <h2>⚖ Section {{ section.section }}</h2>
+
+    <hr>
+
+    <p><strong>Crime:</strong> {{ section.crime }}</p>
+    <p><strong>Punishment:</strong> {{ section.punishment }}</p>
+
+    <hr>
+
+    <h4>🤖 AI Legal Explanation</h4>
+    <p>{{ explanation }}</p>
+
+    <a href="/all" class="btn btn-secondary mt-3">⬅ Back</a>
+
+</div>
+
+{% endblock %}
