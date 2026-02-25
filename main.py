@@ -8,7 +8,6 @@ import models
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-
 templates = Jinja2Templates(directory="templates")
 
 
@@ -18,6 +17,28 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+# 🔥 AUTO INSERT DEFAULT IPC SECTIONS
+def seed_data():
+    db = SessionLocal()
+    if db.query(models.LegalSection).count() == 0:
+        default_sections = [
+            {"section": "302", "crime": "Murder", "punishment": "Life imprisonment or death"},
+            {"section": "420", "crime": "Cheating", "punishment": "7 years imprisonment"},
+            {"section": "376", "crime": "Rape", "punishment": "Rigorous imprisonment not less than 10 years"},
+            {"section": "499", "crime": "Defamation", "punishment": "2 years imprisonment"},
+            {"section": "378", "crime": "Theft", "punishment": "3 years imprisonment"},
+        ]
+
+        for item in default_sections:
+            db.add(models.LegalSection(**item))
+
+        db.commit()
+    db.close()
+
+
+seed_data()
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -47,56 +68,52 @@ def add_section(
     return RedirectResponse(url="/all", status_code=303)
 
 
-# 🔎 SEARCH BY SECTION
 @app.post("/search_section", response_class=HTMLResponse)
-def search_section(
-    request: Request,
-    section: str = Form(...),
-    db: Session = Depends(get_db)
-):
+def search_section(request: Request, section: str = Form(...), db: Session = Depends(get_db)):
     result = db.query(models.LegalSection)\
         .filter(models.LegalSection.section == section)\
         .first()
 
     if result:
-        return templates.TemplateResponse("home.html", {
-            "request": request,
-            "result": result
-        })
+        return templates.TemplateResponse("home.html", {"request": request, "result": result})
     else:
-        return templates.TemplateResponse("home.html", {
-            "request": request,
-            "error": "Section not found"
-        })
+        return templates.TemplateResponse("home.html", {"request": request, "error": "Section not found"})
 
 
-# 🔎 SEARCH BY CRIME
 @app.post("/search_crime", response_class=HTMLResponse)
-def search_crime(
-    request: Request,
-    crime: str = Form(...),
-    db: Session = Depends(get_db)
-):
+def search_crime(request: Request, crime: str = Form(...), db: Session = Depends(get_db)):
     result = db.query(models.LegalSection)\
         .filter(models.LegalSection.crime.ilike(f"%{crime}%"))\
         .first()
 
     if result:
-        return templates.TemplateResponse("home.html", {
-            "request": request,
-            "result": result
-        })
+        return templates.TemplateResponse("home.html", {"request": request, "result": result})
     else:
-        return templates.TemplateResponse("home.html", {
-            "request": request,
-            "error": "Crime not found"
-        })
+        return templates.TemplateResponse("home.html", {"request": request, "error": "Crime not found"})
+
+
+@app.get("/section/{section_id}", response_class=HTMLResponse)
+def section_detail(section_id: str, request: Request, db: Session = Depends(get_db)):
+    section = db.query(models.LegalSection)\
+        .filter(models.LegalSection.section == section_id)\
+        .first()
+
+    explanation = f"""
+    Section {section.section} deals with {section.crime}.
+    This offence is punishable with {section.punishment}.
+    It is considered a serious legal offence under Indian Penal Code.
+    """
+
+    return templates.TemplateResponse("detail.html", {
+        "request": request,
+        "section": section,
+        "explanation": explanation
+    })
 
 
 @app.get("/all", response_class=HTMLResponse)
 def view_all(request: Request, page: int = 1, db: Session = Depends(get_db)):
     per_page = 10
-
     total_records = db.query(models.LegalSection).count()
     total_pages = (total_records + per_page - 1) // per_page
 
@@ -110,31 +127,4 @@ def view_all(request: Request, page: int = 1, db: Session = Depends(get_db)):
         "sections": sections,
         "page": page,
         "total_pages": total_pages
-    })
-
-
-@app.get("/section/{section_id}", response_class=HTMLResponse)
-def section_detail(section_id: str, request: Request, db: Session = Depends(get_db)):
-    section = db.query(models.LegalSection)\
-        .filter(models.LegalSection.section == section_id)\
-        .first()
-
-    if not section:
-        return templates.TemplateResponse("home.html", {
-            "request": request,
-            "error": "Section not found"
-        })
-
-    # Simple AI-style explanation (static for now)
-    explanation = f"""
-    Section {section.section} deals with {section.crime}.
-    According to Indian Penal Code, this offence is punishable with {section.punishment}.
-    This section is commonly applied in cases involving {section.crime.lower()} 
-    and is considered a serious legal offence.
-    """
-
-    return templates.TemplateResponse("detail.html", {
-        "request": request,
-        "section": section,
-        "explanation": explanation
     })
