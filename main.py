@@ -87,14 +87,29 @@ def logout(request: Request):
 # Show All
 # ----------------------------
 @app.get("/all", response_class=HTMLResponse)
-def show_all(request: Request):
+def show_all(request: Request, page: int = 1):
     db = SessionLocal()
-    sections = db.query(models.LegalSection).all()
+
+    per_page = 10
+    total = db.query(models.LegalSection).count()
+
+    sections = db.query(models.LegalSection) \
+        .offset((page - 1) * per_page) \
+        .limit(per_page) \
+        .all()
+
     db.close()
+
+    total_pages = (total + per_page - 1) // per_page
 
     return templates.TemplateResponse(
         "all.html",
-        {"request": request, "sections": sections}
+        {
+            "request": request,
+            "sections": sections,
+            "page": page,
+            "total_pages": total_pages
+        }
     )
 
 
@@ -127,3 +142,4 @@ def search_crime(request: Request, crime: str = Form(...)):
         "all.html",
         {"request": request, "sections": result}
     )
+
