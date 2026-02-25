@@ -111,3 +111,30 @@ def view_all(request: Request, page: int = 1, db: Session = Depends(get_db)):
         "page": page,
         "total_pages": total_pages
     })
+
+
+@app.get("/section/{section_id}", response_class=HTMLResponse)
+def section_detail(section_id: str, request: Request, db: Session = Depends(get_db)):
+    section = db.query(models.LegalSection)\
+        .filter(models.LegalSection.section == section_id)\
+        .first()
+
+    if not section:
+        return templates.TemplateResponse("home.html", {
+            "request": request,
+            "error": "Section not found"
+        })
+
+    # Simple AI-style explanation (static for now)
+    explanation = f"""
+    Section {section.section} deals with {section.crime}.
+    According to Indian Penal Code, this offence is punishable with {section.punishment}.
+    This section is commonly applied in cases involving {section.crime.lower()} 
+    and is considered a serious legal offence.
+    """
+
+    return templates.TemplateResponse("detail.html", {
+        "request": request,
+        "section": section,
+        "explanation": explanation
+    })
