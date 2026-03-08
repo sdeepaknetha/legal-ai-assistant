@@ -29,6 +29,22 @@ https://legal-ai-assistant-muk0.onrender.com
 
 ---
 
+## 🖥 Home Page
+
+![Home](home.png)
+
+---
+
+## 📜 IPC Sections List
+
+![Sections](sections.png)
+
+---
+
+## 🔍 Section Details
+
+![Detail](detail.png)
+
 ## 🛠 Tech Stack
 
 Backend
