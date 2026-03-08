@@ -52,3 +52,36 @@ Version Control
 ---
 
 ## 📚 Project Structure
+
+legal-ai-assistant
+│
+├── main.py
+├── models.py
+├── database.py
+├── requirements.txt
+├── Procfile
+│
+└── templates
+├── base.html
+├── home.html
+├── add.html
+├── detail.html
+└── all.html
+
+---
+
+## 🚀 How It Works
+
+1. User enters IPC section number or crime name.
+2. FastAPI backend processes the request.
+3. SQLAlchemy queries the SQLite database.
+4. Results are sent to HTML templates using Jinja2.
+5. Pagination divides results into multiple pages.
+
+---
+
+## 👨‍💻 Author
+
+Deepak Samala
+
+© 2026 Legal AI Assistant
